@@ -79,7 +79,7 @@ pipeline{
         stage('OWASP Zap Scan (DAST)') {
             steps {
                 script {
-                    docker.image('owasp/zap2docker-live:latest').withRun('-u zap -p 8081:8080 -p 8090:8090') {
+                    docker.image('owasp/zap2docker-live:latest').withRun('-u zap -p 8081:8080 -p 8090:8090 --rm --name zap2docker') {
                         sh 'zap-baseline.py -t http://localhost:3000 -r zap-report.html'
                     }
                 }
@@ -97,6 +97,8 @@ pipeline{
       always {
             script {
                 sh "docker stop devsecops-nuxt-vuetify"
+                sh "docker rm devsecops-nuxt-vuetify"
+                sh "docker rmi devsecops-nuxt-vuetify"
                 sh "docker rmi viswampc/devsecops-nuxt-vuetify:latest"
             }
 
