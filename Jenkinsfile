@@ -103,14 +103,20 @@ pipeline{
                 }
             }
         }
+    }
 
-        publishHTML(target: [
-            allowMissing: false,
-            alwaysLinkToLastBuild: false,
-            keepAll: true,
-            reportDir: 'zap-reports',
-            reportFiles: 'zap-report.html',
-            reportName: 'ZAP Report'
-        ])
+    post {
+        always {
+            script {
+                publishHTML(target: [
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: false,
+                    keepAll: true,
+                    reportDir: 'zap-reports',
+                    reportFiles: 'zap-report.html',
+                    reportName: 'ZAP Report'
+                ])
+            }
+        }
     }
 }
