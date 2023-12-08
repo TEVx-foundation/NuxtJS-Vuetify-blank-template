@@ -56,9 +56,9 @@ pipeline{
             steps{
                 script{
                    withDockerRegistry(credentialsId: 'docker-credentials', toolName: 'docker'){   
-                       sh "docker build -t DevSecOps-Nuxt-Vuetify ."
-                       sh "docker tag DevSecOps-Nuxt-Vuetify viswampc/DevSecOps-Nuxt-Vuetify:latest"
-                       //  sh "docker push viswampc/DevSecOps-Nuxt-Vuetify:latest"
+                       sh "docker build -t devsecops-nuxt-vuetify ."
+                       sh "docker tag devsecops-nuxt-vuetify viswampc/devsecops-nuxt-vuetify:latest"
+                       //  sh "docker push viswampc/devsecops-nuxt-vuetify:latest"
                     }
                 }
             }
@@ -66,13 +66,13 @@ pipeline{
 
         stage("Trivy Image Scan"){
             steps{
-                sh "trivy image viswampc/DevSecOps-Nuxt-Vuetify:latest > trivyimage.txt" 
+                sh "trivy image viswampc/devsecops-nuxt-vuetify:latest > trivyimage.txt" 
             }
         }
 
         stage('Docker Start Image') {
             steps {
-                sh "docker run --rm -d -p 3000:3000 --name devsecops-nuxt-vuetify viswampc/DevSecOps-Nuxt-Vuetify:latest"
+                sh "docker run --rm -d -p 3000:3000 --name devsecops-nuxt-vuetify viswampc/devsecops-nuxt-vuetify:latest"
             }
         }
 
@@ -96,11 +96,9 @@ pipeline{
     post {
       always {
             script {
-                try {
-                    docker.image('devsecops-nuxt-vuetify').stop()
-                } finally {
-                    docker.image('devsecops-nuxt-vuetify').remove()
-                }
+                sh "docker stop devsecops-nuxt-vuetify"
+                sh "docker rm devsecops-nuxt-vuetify"
+                sh "docker rmi viswampc/devsecops-nuxt-vuetify:latest"
             }
 
             script {
