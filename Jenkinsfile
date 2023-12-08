@@ -80,7 +80,8 @@ pipeline{
             steps {
                 script {
                     docker.image('owasp/zap2docker-live:latest').withRun('-u zap -p 8081:8080 -p 8090:8090 --rm --name zap2docker') {
-                        sh 'zap-baseline.py -t http://localhost:3000 -r zap-report.html'
+                        sh 'mkdir -p /zap/wrk'
+                        sh '/zap/zap-baseline.py -t http://localhost:3000 -r /zap/wrk/nuxt-zap-report.html'
                     }
                 }
             }
@@ -97,8 +98,7 @@ pipeline{
       always {
             script {
                 sh "docker stop devsecops-nuxt-vuetify"
-                sh "docker rm devsecops-nuxt-vuetify"
-                sh "docker rmi devsecops-nuxt-vuetify"
+                sh "docker rmi devsecops-nuxt-vuetify:latest"
                 sh "docker rmi viswampc/devsecops-nuxt-vuetify:latest"
             }
 
@@ -108,7 +108,7 @@ pipeline{
                     alwaysLinkToLastBuild: false,
                     keepAll: true,
                     reportDir: 'zap-reports',
-                    reportFiles: 'zap-report.html',
+                    reportFiles: 'nuxt-zap-report.html',
                     reportName: 'ZAP Report'
                 ])
             }
