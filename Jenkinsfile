@@ -32,6 +32,7 @@ pipeline{
             steps {
                 sh "npm install -g yarn"
                 sh "yarn install"
+                sh "export NODE_OPTIONS=--openssl-legacy-provider"
                 sh "yarn build"
             }
         }
