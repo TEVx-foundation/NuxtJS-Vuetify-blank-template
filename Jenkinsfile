@@ -102,11 +102,7 @@ pipeline{
                     docker.image('devsecops-nuxt-vuetify').remove()
                 }
             }
-        }
-    }
 
-    post {
-        always {
             script {
                 publishHTML(target: [
                     allowMissing: false,
