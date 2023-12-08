@@ -72,13 +72,17 @@ pipeline{
 
         stage('Docker Start Image') {
             steps {
-                sh "docker run -d -p 3000:3000 --name DevSecOps-Nuxt-Vuetify viswampc/DevSecOps-Nuxt-Vuetify:latest"
+                sh "docker run --rm -d -p 3000:3000 --name devsecops-nuxt-vuetify viswampc/DevSecOps-Nuxt-Vuetify:latest"
             }
         }
 
         stage('OWASP Zap Scan (DAST)') {
             steps {
-                sh "docker run --rm -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable zap-baseline.py -t http://localhost:3000 -g gen.conf -r zap-report.html"
+                script {
+                    docker.image('owasp/zap2docker-live:latest').withRun('-u zap -p 8080:8080 -p 8090:8090') {
+                        sh 'zap-baseline.py -t http://localhost:3000 -r zap-report.html'
+                    }
+                }
             }
         }
 
@@ -90,6 +94,16 @@ pipeline{
     }
 
     post {
+      always {
+            script {
+                try {
+                    docker.image('devsecops-nuxt-vuetify').stop()
+                } finally {
+                    docker.image('devsecops-nuxt-vuetify').remove()
+                }
+            }
+        }
+
         publishHTML(target: [
             allowMissing: false,
             alwaysLinkToLastBuild: false,
