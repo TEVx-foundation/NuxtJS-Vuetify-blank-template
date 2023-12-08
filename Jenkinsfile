@@ -81,9 +81,9 @@ pipeline{
                 script {
                     sh 'mkdir -p $WORKSPACE/zap-work'
                     sh 'docker run -itd --rm -u zap -v $WORKSPACE/zap-work:/zap/wrk -p 8081:8080 -p 8090:8090 -d --name owasp-zap owasp/zap2docker-live:latest'
-                    sh 'docker exec owasp-zap mkdir /zap/wrk'
+                    sh 'docker exec owasp-zap mkdir -p /zap/wrk'
                     sh 'docker exec owasp-zap zap-baseline.py -t http://localhost:3000 -r /zap/wrk/nuxt-zap-report.html'
-                    
+
                     // docker.image('owasp/zap2docker-live:latest').withRun('-u zap -v $WORKSPACE/zap-work:/zap/wrk -p 8081:8080 -p 8090:8090 --rm --name zap2docker') {
                     //     sh '/zap/zap-baseline.py -t http://localhost:3000 -r /zap/wrk/nuxt-zap-report.html'
                     // }
