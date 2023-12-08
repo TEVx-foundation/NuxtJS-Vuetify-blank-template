@@ -72,7 +72,8 @@ pipeline{
 
         stage('Docker Start Container') {
             steps {
-                sh "docker run --rm -d -p 3000:3000 --network DevSecOps --name devsecops-nuxt-vuetify viswampc/devsecops-nuxt-vuetify:latest"
+                // sh "docker run --rm -d -p 3000:3000 --network DevSecOps --name devsecops-nuxt-vuetify viswampc/devsecops-nuxt-vuetify:latest"
+                sh "docker run --rm -d -p 3000:3000 --network DevSecOps --name devsecops-nuxt-vuetify viswampc/nuxtjs-vuetify-blank-template:v5"
             }
         }
 
