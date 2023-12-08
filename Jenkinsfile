@@ -79,15 +79,15 @@ pipeline{
         stage('OWASP Zap Scan (DAST)') {
             steps {
                 script {
-                    docker.image('owasp/zap2docker-live:latest').withRun('-u zap -p 8081:8080 -p 8090:8090 --rm --name zap2docker') {
-                        sh 'mkdir -p /zap/wrk'
+                    sh 'mkdir -p $WORKSPACE/zap-work'
+                    docker.image('owasp/zap2docker-live:latest').withRun('-u zap -v $WORKSPACE/zap-work:/zap/wrk -p 8081:8080 -p 8090:8090 --rm --name zap2docker') {
                         sh '/zap/zap-baseline.py -t http://localhost:3000 -r /zap/wrk/nuxt-zap-report.html'
                     }
                 }
             }
         }
 
-        stage('Deploy to container'){
+        stage('Deploy Container'){
             steps{
                 sh 'echo "Deploying to container."'
             }
