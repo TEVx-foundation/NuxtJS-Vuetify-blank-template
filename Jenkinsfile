@@ -42,7 +42,7 @@ pipeline{
             }
         }
 
-        stage('TRIVY File System Analysis') {
+        stage('Trivy FS Analysis') {
             steps {
                 sh "trivy fs . > trivyfs.txt"
             }
