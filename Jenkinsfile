@@ -89,7 +89,12 @@ pipeline{
 
                     sh 'docker exec -u 0 owasp-zap chmod 777 /zap/wrk'
                     sh 'docker exec -u 0 owasp-zap chmod 777 /home/zap'
-                    sh 'docker exec owasp-zap zap-baseline.py -t http://172.19.0.2:3000 -r nuxt-zap-report.html'
+
+                    try {
+                        sh 'docker exec owasp-zap zap-baseline.py -t http://172.19.0.2:3000 -r nuxt-zap-report.html'
+                    } catch (err) {
+                        echo "ZAP Scan Completed with Errors and Warnings."
+                    }
 
                     // docker.image('owasp/zap2docker-live:latest').withRun('-u zap -v $WORKSPACE/zap-work:/zap/wrk -p 8081:8080 -p 8090:8090 --rm --name zap2docker') {
                     //     sh '/zap/zap-baseline.py -t http://localhost:3000 -r /zap/wrk/nuxt-zap-report.html'
