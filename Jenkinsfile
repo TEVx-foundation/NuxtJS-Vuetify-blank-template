@@ -72,7 +72,7 @@ pipeline{
 
         stage('Docker Start Container') {
             steps {
-                sh "docker run --rm -d -p 3000:3000 --name devsecops-nuxt-vuetify viswampc/devsecops-nuxt-vuetify:latest"
+                sh "docker run --rm -d -p 3000:3000 --network DevSecOps --name devsecops-nuxt-vuetify viswampc/devsecops-nuxt-vuetify:latest"
             }
         }
 
@@ -80,9 +80,9 @@ pipeline{
             steps {
                 script {
                     sh 'mkdir -p $WORKSPACE/zap-work'
-                    sh 'docker run -itd --rm -u zap -v $WORKSPACE/zap-work:/zap/wrk -p 8081:8080 -p 8090:8090 -d --name owasp-zap owasp/zap2docker-live:latest'
+                    sh 'docker run -itd --rm -u zap --network DevSecOps -v $WORKSPACE/zap-work:/zap/wrk -p 8081:8080 -p 8090:8090 -d --name owasp-zap owasp/zap2docker-live:latest'
                     sh 'docker exec owasp-zap mkdir -p /zap/wrk'
-                    sh 'docker exec owasp-zap zap-baseline.py -t http://0.0.0.0:3000 -r /zap/wrk/nuxt-zap-report.html'
+                    sh 'docker exec owasp-zap zap-baseline.py -t http://172.19.0.2:3000 -r /zap/wrk/nuxt-zap-report.html'
 
                     // docker.image('owasp/zap2docker-live:latest').withRun('-u zap -v $WORKSPACE/zap-work:/zap/wrk -p 8081:8080 -p 8090:8090 --rm --name zap2docker') {
                     //     sh '/zap/zap-baseline.py -t http://localhost:3000 -r /zap/wrk/nuxt-zap-report.html'
@@ -102,8 +102,8 @@ pipeline{
       always {
             script {
                 sh "docker stop devsecops-nuxt-vuetify"
-                sh "docker rmi devsecops-nuxt-vuetify:latest"
-                sh "docker rmi viswampc/devsecops-nuxt-vuetify:latest"
+                sh "docker rmi devsecops-nuxt-vuetify:latest --force"
+                sh "docker rmi viswampc/devsecops-nuxt-vuetify:latest --force"
             }
 
             script {
