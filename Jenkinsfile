@@ -28,23 +28,21 @@ pipeline{
             }
         }
   
-        stage('Install Dependencies') {
+        stage('Install Application Dependencies') {
             steps {
                 sh "npm install -g yarn"
                 sh "yarn install"
-                sh "export NODE_OPTIONS=--openssl-legacy-provider"
-                sh "yarn build"
             }
         }
 
-        stage('OWASP FS SCAN') {
+        stage('OWASP SCA Analysis') {
             steps {
                 dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit',   odcInstallation: 'owasp-dependency-check'
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
 
-        stage('TRIVY FS SCAN') {
+        stage('TRIVY File System Analysis') {
             steps {
                 sh "trivy fs . > trivyfs.txt"
             }
@@ -64,13 +62,13 @@ pipeline{
 
         stage("TRIVY"){
             steps{
-                sh "trivy image viswampc/ExaQuo:latest > trivyimage.txt" 
+                sh "trivy image viswampc/DevSecOps-Nuxt-Vuetify:latest > trivyimage.txt" 
             }
         }
 
         stage('Deploy to container'){
             steps{
-                sh 'docker run -d --name ExaQuo-lts -p 3000:3000 viswampc/ExaQuo:latest'
+                sh 'echo "Deploying to container."'
             }
         }
     }
