@@ -94,6 +94,9 @@ pipeline{
                     // docker.image('owasp/zap2docker-live:latest').withRun('-u zap -v $WORKSPACE/zap-work:/zap/wrk -p 8081:8080 -p 8090:8090 --rm --name zap2docker') {
                     //     sh '/zap/zap-baseline.py -t http://localhost:3000 -r /zap/wrk/nuxt-zap-report.html'
                     // }
+
+                    sh 'docker stop owasp-zap'
+                    sh 'docker container prune --force'
                 }
             }
         }
@@ -111,17 +114,6 @@ pipeline{
                 sh "docker stop devsecops-nuxt-vuetify"
                 sh "docker rmi devsecops-nuxt-vuetify:latest --force"
                 sh "docker rmi viswampc/devsecops-nuxt-vuetify:latest --force"
-            }
-
-            script {
-                publishHTML(target: [
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: false,
-                    keepAll: true,
-                    reportDir: 'zap-reports',
-                    reportFiles: 'nuxt-zap-report.html',
-                    reportName: 'ZAP Report'
-                ])
             }
         }
     }
